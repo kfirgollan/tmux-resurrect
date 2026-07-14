@@ -39,4 +39,10 @@ run_shell_command "cd /tmp/bar"
 
 start_resurrect_save
 
+# TEMP DEBUG: capture state for CI diagnosis
+run_shell_command "tmux show-options -g | grep resurrect > /tmp/rd-options.txt 2>&1"
+run_shell_command "tmux list-keys | grep resurrect > /tmp/rd-keys.txt 2>&1"
+run_shell_command "ls -la ~/.tmux/resurrect/ > /tmp/rd-dir.txt 2>&1"
+run_shell_command "~/.tmux/plugins/tmux-plugin-under-test/scripts/save.sh quiet > /tmp/rd-save.txt 2>&1"
+
 run_shell_command "tmux kill-server"
