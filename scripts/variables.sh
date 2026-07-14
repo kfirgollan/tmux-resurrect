@@ -24,6 +24,10 @@ restore_processes=""
 #   set -g @resurrect-strategy-vim "session"
 restore_process_strategy_option="@resurrect-strategy-"
 
+# Defines part of the user variable. Example usage:
+#   set -g @resurrect-save-strategy-claude "session"
+save_process_strategy_option="@resurrect-save-strategy-"
+
 inline_strategy_token="->"
 inline_strategy_arguments_token="*"
 

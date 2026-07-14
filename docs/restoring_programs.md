@@ -4,6 +4,10 @@
   - [Working with NodeJS](#nodejs)
   - [Restoring Mosh](#mosh)
 
+Restoring [Claude Code](https://claude.com/claude-code) conversations is
+supported out of the box, see
+[restoring Claude Code sessions](restoring_claude_code_sessions.md).
+
 ### General instructions <a name="general-instructions"></a>
 Only a conservative list of programs is restored by default:<br/>
 `vi vim nvim emacs man less more tail top htop irssi weechat mutt`.

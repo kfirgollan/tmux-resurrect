@@ -112,6 +112,51 @@ pane_full_command() {
 	$strategy_file "$pane_pid"
 }
 
+_get_save_strategy() {
+	local full_command="$1"
+	local command="$(echo "$full_command" | cut -d' ' -f1)"
+	get_tmux_option "${save_process_strategy_option}${command}" ""
+}
+
+_get_save_strategy_file() {
+	local full_command="$1"
+	local strategy="$(_get_save_strategy "$full_command")"
+	local command="$(echo "$full_command" | cut -d' ' -f1)"
+	echo "$CURRENT_DIR/../save_strategies/${command}_${strategy}.sh"
+}
+
+_save_strategy_exists() {
+	local full_command="$1"
+	local strategy="$(_get_save_strategy "$full_command")"
+	if [ -n "$strategy" ]; then # strategy set?
+		local strategy_file="$(_get_save_strategy_file "$full_command")"
+		[ -e "$strategy_file" ] # strategy file exists?
+	else
+		return 1
+	fi
+}
+
+# Enables adjusting the saved command for a program, e.g. so that restoring it
+# resumes where it left off. Configured via per-program tmux option:
+#   set -g @resurrect-save-strategy-<program> "<strategy>"
+# which executes `save_strategies/<program>_<strategy>.sh` with the pane pid,
+# full command and pane directory. Script output is saved as the command.
+_maybe_apply_save_strategy() {
+	local pane_pid="$1"
+	local full_command="$2"
+	local dir="$3"
+	local strategy_command=""
+	if _save_strategy_exists "$full_command"; then
+		local strategy_file="$(_get_save_strategy_file "$full_command")"
+		strategy_command="$($strategy_file "$pane_pid" "$full_command" "$dir")"
+	fi
+	if [ -n "$strategy_command" ]; then
+		echo "$strategy_command"
+	else
+		echo "$full_command"
+	fi
+}
+
 number_nonempty_lines_on_screen() {
 	local pane_id="$1"
 	tmux capture-pane -pJ -t "$pane_id" |
@@ -195,6 +240,7 @@ dump_panes() {
 				continue
 			fi
 			full_command="$(pane_full_command $pane_pid)"
+			full_command="$(_maybe_apply_save_strategy "$pane_pid" "$full_command" "$(remove_first_char "$dir")")"
 			dir=$(echo $dir | sed 's/ /\\ /') # escape all spaces in directory path
 			echo "${line_type}${d}${session_name}${d}${window_number}${d}${window_active}${d}${window_flags}${d}${pane_index}${d}${pane_title}${d}${dir}${d}${pane_active}${d}${pane_command}${d}:${full_command}"
 		done

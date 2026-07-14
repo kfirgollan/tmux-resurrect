@@ -24,6 +24,13 @@ set_restore_bindings() {
 set_default_strategies() {
 	tmux set-option -gq "${restore_process_strategy_option}irb" "default_strategy"
 	tmux set-option -gq "${restore_process_strategy_option}mosh-client" "default_strategy"
+	# only set claude strategies if the user hasn't configured them
+	if [ -z "$(get_tmux_option "${restore_process_strategy_option}claude" "")" ]; then
+		tmux set-option -gq "${restore_process_strategy_option}claude" "session"
+	fi
+	if [ -z "$(get_tmux_option "${save_process_strategy_option}claude" "")" ]; then
+		tmux set-option -gq "${save_process_strategy_option}claude" "session"
+	fi
 }
 
 set_script_path_options() {
