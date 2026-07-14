@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          find . -path ./lib -prune -o -type f \( -name '*.sh' -o -name '*.tmux' \) -print0 \
+            | xargs -0 shellcheck -s bash -S error
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -yqq tmux expect vim less man-db
+      # the test harness drives a real tmux via expect and needs a pty,
+      # hence `script`
+      - name: Run tests
+        run: script -qec "./tests/run_tests_in_isolation" /dev/null

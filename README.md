@@ -1,6 +1,6 @@
 # Tmux Resurrect
 
-[![Build Status](https://travis-ci.org/tmux-plugins/tmux-resurrect.svg?branch=master)](https://travis-ci.org/tmux-plugins/tmux-resurrect)
+[![CI](https://github.com/kfirgollan/tmux-resurrect/actions/workflows/ci.yml/badge.svg)](https://github.com/kfirgollan/tmux-resurrect/actions/workflows/ci.yml)
 
 Restore `tmux` environment after system restart.
 
