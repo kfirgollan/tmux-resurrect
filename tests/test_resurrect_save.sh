@@ -21,7 +21,6 @@ main() {
 		# aid debugging (e.g. in CI): show where a save might have landed
 		ls -la "${HOME}/.tmux/resurrect/" \
 			"${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/resurrect/" >&2 || true
-		head -50 /tmp/rd-*.txt >&2 || true # TEMP DEBUG
 	fi
 	exit_helper
 }
