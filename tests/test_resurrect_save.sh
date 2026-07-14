@@ -18,6 +18,9 @@ main() {
 
 	if last_save_file_differs_helper "tests/fixtures/save_file.txt"; then
 		fail_helper "Saved file not correct (initial save)"
+		# aid debugging (e.g. in CI): show where a save might have landed
+		ls -la "${HOME}/.tmux/resurrect/" \
+			"${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/resurrect/" >&2 || true
 	fi
 	exit_helper
 }
