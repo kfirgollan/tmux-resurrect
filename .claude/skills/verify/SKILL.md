@@ -41,9 +41,10 @@ default server — always use a separate socket (`tmux -L rtest ...`).
 
 ## Gotchas
 
-- The tmux-test harness (`./run_tests`, Vagrant) is CI's job and its
-  fixtures are stale relative to the current save format — don't use it as
-  verification.
+- The tmux-test harness is CI's job (GitHub Actions runs
+  `tests/run_tests_in_isolation` in a pty via `script`). It is destructive
+  (`rm -rf ~/.tmux/`) — to run it locally, use an ubuntu docker container,
+  and remember the harness clones the plugin from *committed* state.
 - Strategy scripts (`strategies/`, `save_strategies/`) are tmux-free by
   design; `./tests/test_claude_strategies.sh` runs them standalone.
 - For Claude Code panes: a first-run dir shows a trust dialog that blocks

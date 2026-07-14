@@ -33,9 +33,11 @@ git submodule update --init    # required once, or symlinks are broken
 ./tests/run_tests_in_isolation # runs directly on the current machine (used by CI)
 ```
 
-Warning: `run_tests_in_isolation` installs the plugin and manipulates the *local* tmux server and `~/.tmux/resurrect` — only run it in a throwaway environment, never casually on a dev machine.
+Warning: `run_tests_in_isolation` installs the plugin and manipulates the *local* tmux server and `~/.tmux/resurrect` — only run it in a throwaway environment, never casually on a dev machine. The safe local way is an ubuntu container with the same deps CI installs (`.github/workflows/ci.yml`), running the suite under `script -qec ... /dev/null` for a pty; note the harness clones the plugin from the repo's *committed* state, so commit (or commit inside a container copy) before running.
 
-Tests are end-to-end: `expect` scripts (`tests/helpers/*.exp`) drive a real tmux session, save/restore it, and diff the resulting save file against `tests/fixtures/*.txt`. There are no unit tests. If you change the save-file format, the fixtures must be updated in lockstep.
+Most tests are end-to-end: `expect` scripts (`tests/helpers/*.exp`) drive a real tmux session, save/restore it, and diff the resulting save file against `tests/fixtures/*.txt` (pane titles are host-specific and get normalized by `tests/helpers/resurrect_helpers.sh` before diffing). If you change the save-file format, the fixtures must be regenerated in lockstep. `tests/test_claude_strategies.sh` is standalone (no tmux needed). Fixtures assume the CI environment: tmux from ubuntu's apt, 200x50 pty, `vim`/`man`/`less` installed.
+
+CI (GitHub Actions) also gates on `shellcheck -s bash -S error` over all shell files and a gitleaks secret scan; `lefthook.yml` mirrors these as local pre-commit/pre-push hooks.
 
 ## Architecture
 

@@ -1,0 +1,23 @@
+# Local git hooks managed by lefthook (https://lefthook.dev).
+#
+# One-time setup:
+#   brew install lefthook gitleaks shellcheck   # or your package manager
+#   lefthook install
+#
+# These mirror the CI gates (.github/workflows/ci.yml) so problems are
+# caught before they leave the machine. This is a public repo - the gitleaks
+# hooks are the last line of defense against committing secrets.
+
+pre-commit:
+  parallel: true
+  commands:
+    shellcheck:
+      glob: "*.{sh,tmux}"
+      run: shellcheck -s bash -S error {staged_files}
+    gitleaks:
+      run: gitleaks git --staged --redact
+
+pre-push:
+  commands:
+    gitleaks:
+      run: gitleaks git --redact
