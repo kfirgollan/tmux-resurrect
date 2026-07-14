@@ -13,6 +13,7 @@ create_tmux_test_environment_and_save() {
 main() {
 	install_tmux_plugin_under_test_helper
 	mkdir -p /tmp/bar # setup required dirs
+	mkdir -p "${HOME}/.tmux/resurrect" # so saving uses the default dir and not the XDG fallback
 	create_tmux_test_environment_and_save
 
 	if last_save_file_differs_helper "tests/fixtures/save_file.txt"; then
